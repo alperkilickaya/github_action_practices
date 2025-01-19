@@ -33,8 +33,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Test code
+        id: run-tests
         run: npm run test
       - name: Upload test report
+        # we added failed() to the if condition to only upload the test report if the tests failed
+        if: failure() && steps.run-tests.outcome == 'failure'
         uses: actions/upload-artifact@v3
         with:
           name: test-report
@@ -73,3 +76,12 @@ jobs:
         run: ls
       - name: Deploy
         run: echo "Deploying..."
+  report:
+    needs: [lint, deploy] # we only add lint and deploy because deploy depends on build and build depends on test
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output information
+        run: |
+          echo "The workflow failed"
+          echo {{ github }}
