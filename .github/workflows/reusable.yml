@@ -3,7 +3,7 @@ on:
   workflow_call:
     inputs:
       artifact-name:
-        description: "Name of the artifact to download"
+        description: "Name of the deployable artifact files"
         required: true
         default: "dist"
         type: string
@@ -14,7 +14,7 @@ on:
       #    type: string
     outputs:
       result:
-        description: "Name of the artifact to download"
+        description: "The result of the deployment operation"
         value: ${{ jobs.deploy.outputs.outcome }}
 jobs:
   deploy:
