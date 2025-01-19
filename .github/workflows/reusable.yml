@@ -1,14 +1,35 @@
 name: Reusable Deoploy
-on: workflow_call
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        description: "Name of the artifact to download"
+        required: true
+        default: "dist"
+        type: string
+      #secret:
+      #  some-secret:
+      #    description: "A secret value"
+      #    required: true
+      #    type: string
+    outputs:
+      artifact-name:
+        description: "Name of the artifact to download"
+        value: ${{ jobs.deploy.outputs.outcome }}
 jobs:
   deploy:
+    outputs:
+      outcome: ${{ steps.set-result.outputs.step-result }}
     runs-on: ubuntu-latest
     steps:
       - name: Get build artifacts
         uses: actions/download-artifact@v3
         with:
-          name: dist-files
-      - name: Output contents
+          name: ${{ inputs.artifact-name }}
+      - name: List files
         run: ls
       - name: Deploy
         run: echo "Deploying..."
+      - name: Set result output
+        id: set-result
+        run: echo "step-result=success" >> $GITHUB_OUTPUT

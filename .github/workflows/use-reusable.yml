@@ -67,16 +67,15 @@ jobs:
           path: dist
   deploy:
     needs: build
+    uses: ./.github/workflows/reusable.yml
+    with:
+      artifact-name: dist-files
+  print-deploy-result:
+    needs: [deploy]
     runs-on: ubuntu-latest
     steps:
-      - name: Get build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: dist-files
-      - name: Output contents
-        run: ls
-      - name: Deploy
-        run: echo "Deploying..."
+      - name: Output information
+        run: echo "The deployment was ${{ needs.deploy.outputs.result }}"
   report:
     needs: [lint, deploy] # we only add lint and deploy because deploy depends on build and build depends on test
     if: failure()
